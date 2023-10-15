@@ -125,7 +125,7 @@ service bind9 stop
 ```
 ![slave1](https://cdn.discordapp.com/attachments/1025213238763327683/1161936402389418075/image.png?ex=653a1c9a&is=6527a79a&hm=ea17e70be016c91f86ed1b44ec447bad0c7b00ef034eeb4346db4dc3745f12d6&)
 ### Pada Werkudara
-- Setup pada `/etc/bind/named.conf.local`
+- Setup pada `/etc/bind/named.conf.local`\
 ![slaved](https://cdn.discordapp.com/attachments/1025213238763327683/1161940625160142899/image.png?ex=653a2088&is=6527ab88&hm=81f33d67b09cd62bfd833320d9b599a6859a78783f0e2ff14747a9563896e9d2&)
 ### Pada Sadewa sebagai client
 - Setup `nameserver` di `/etc/resolv.conf` dengan IP Yudhistira dan IP Werkudara.
@@ -180,21 +180,63 @@ service bind9 restart
 - Uji menggunakan `ping rjp.baratayuda.abimanyu.it19.com -c 2` dan `ping www.rjp.baratayuda.abimanyu.it19.com -c 2`
 ![uji](https://cdn.discordapp.com/attachments/1025213238763327683/1162370648006479922/image.png?ex=653bb106&is=65293c06&hm=dc5370eafb9faf31db3ba4c2c9e903e583543522915de218894ffc3b14e2add3&)
 
-# Soal 9
-Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Praktikan melakukan deployment pada masing-masing worker.
+# Soal 9 & 10
+Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Praktikan melakukan deployment pada masing-masing worker dengan algoritma Round Robin pada load balancer.
 ## Jawaban
+### Pada load balancer arjuna
+Dilakukan konfigurasi pada node Arjuna dengan membuat file baru di: ```/etc/nginx/sites-available/arjuna.it19.com```, dengan berisikan:
+![arjuna-lb](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/72d2418e-1341-4f9a-88cb-7ae1190565ed)
 
-# Soal 10
-Menggunakan **Round Robin** untuk Load Balancer pada Arjuna. Praktikan menggunakan server_name pada soal nomor 1. Untuk melakukan pengecekan akses alamat web tersebut kemudian pastikan worker yang digunakan untuk menangani permintaan akan berganti ganti secara acak. Untuk webserver di masing-masing worker wajib berjalan di port 8001-8003. 
-## Jawaban
+3 IP yang terpasangkan pada blok ```upstream workers``` adalah IP dari Prabukusuma, Abimanyu, Wisanggeni secara berurutan
+
+Setelah config, hapus file default pada ```/etc/nginx/sites-enabled/``` agar tidak ter redirect ke page default nginx, serta dibentuk symlink dari file ```/etc/nginx/sites-available/arjuna.it19.com``` ke folder ```/etc/nginx/sites-enabled/```.
+Sesudah config, restart kembali nginx dengan ```service nginx restart```
+
+### Pada worker Prabukusuma, Abimanyu, Wisanggeni
+
+Download resource index.php yang telah disediakan di soal, extract dan pindahkan ke folder ```/var/www/arjuna.it19``` dengan sejumlah command berikut: 
+
+```
+wget -O arjuna.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=17tAM_XDKYWDvF-JJix1x7txvTBEax7vX'
+
+unzip arjuna.zip
+rm arjuna.zip # hapus zip
+cp /arjuna.yyy.com/index.php /var/www/arjuna.it19/index.php
+```
+
+Buatlah config dalam masing-masing node worker di file dengan file ```/etc/nginx/sites-available/default``` sebagai template, copy dengan nama ```/etc/nginx/sites-available/arjuna.it19```
+
+Ganti ```root``` dengan folder tempat index.php yang telah diekstrak tadi sebagai value, dan ubah value angka ```listen``` di awal file config dengan angka yang sesuai untuk tiap worker (Prabukusuma 8001, Abimanyu 8002, Wisanggeni 8003), dalam case ini menggunakan contoh config file dari node Abimanyu\
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/a75ec3ec-0129-4a16-81df-d25f0f077c26)
 
 # Soal 11
 Praktikan melakukan konfigurasi Apache Web Server pada worker Abimanyu dengan web server www.abimanyu.yyy.com.
 ## Jawaban
+Untuk menyelesaikan soal berikut mengharuskan untuk download terlebih dahulu resource pada soal, yang dapat dilakukan dengan set command berikut:
+```
+wget -O abimanyu.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1a4V23hwK9S7hQEDEcv9FL14UkkrHc-Zc' # Download dari google drive resource
+unzip abimanyu.zip # Unzip file
+rm abimanyu.zip # Hapus file jika sudah unzip
+
+cp -r /abimanyu.yyy.com/* /var/www/abimanyu.it19/ # Copy apapun yang ada di dalam folder /abimanyu.yyy.com/ (dengan wildcard *) ke dalam folder /var/www/abimanyu.it19/
+```
+
+Jika sudah meletakkan file resource pada tempat yang seharusnya, selanjutnya membuat file config pada ```/etc/apache2/sites-available/abimanyu.it19.com.conf```. Dengan menggunakan file 000-default.conf sebagai template, lalu dimodifikasi dengan beberapa config tambahan sebagai berikut\
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/964d68a0-4ca1-4bd6-8bf5-f3cca1cbd7fc)
+
+Hasil jika konfigurasi benar dan berhasil dapat dicek dengan ```lynx http://abimanyu.it19.com```:
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/57244010-e021-43fd-a2b9-97e64936a089)
+
+
+atau ```curl http://abimanyu.it19.com```:
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/33c57573-c9ef-413e-a391-200b383e67fd)
 
 # Soal 12
 Praktikan perlu mengubah agar url www.abimanyu.yyy.com/index.php/home menjadi www.abimanyu.yyy.com/home.
 ## Jawaban
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/964d68a0-4ca1-4bd6-8bf5-f3cca1cbd7fc)
+
+Value Alias diatas menggantikan path /index.php/home untuk mengakses home.html yang ada di folder /var/www/abimanyu.it19/
 
 # Soal 13
 Pada subdomain www.parikesit.abimanyu.yyy.com, praktikan menyimpan DocumentRoot pada /var/www/parikesit.abimanyu.yyy.
