@@ -312,13 +312,45 @@ Kembali melihat ke gambar nomor 13, terdapat blok ```Alias``` yang meneruskan cl
 Praktikan membuat konfigurasi agar www.rjp.baratayuda.abimanyu.yyy.com hanya dapat diakses melalui port 14000 dan 14400 agar aman.
 ## Jawaban
 
+Lakukan konfigurasi pada ```/etc/apache2/sites-available/rjp.baratayuda.abimanyu.it19.com.conf```
+
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/31dabe50-cd16-426b-af39-64405190afd8)
+
+dengan menggantikan ```*:80``` di tag ```VirtualHost``` menjadi ```*:14000``` dan ```*:14400```
+
+Lalu pada file ```/etc/apache2/ports.conf```, tambahkan port yang akan 'didengar' dengan menambahkan Listen dengan port 14000 dan 14400 seperti berikut:
+
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/caa3dc86-4f6e-42e9-bfda-2d9cf06e349c)
+
 # Soal 18
 Untuk mengaksesnya praktikan perlu membuat autentikasi username berupa “Wayang” dan password “baratayudayyy” dengan yyy merupakan kode kelompok. Letakkan DocumentRoot pada /var/www/rjp.baratayuda.abimanyu.yyy.
 ## Jawaban
+Dijalankan command berikut untuk membuat file .htpasswd-rjp yang nantinya akan digunakan untuk basic authentication saat mengakses http://rjp.baratayuda.abimanyu.it19.com:
+
+```htpasswd -c /etc/apache2/.htpasswd-rjp Wayang```
+
+Ini akan membuat file autentikasi basic dengan username "Wayang". Setelahnya akan ditanyakan password yang akan digunakan:
+
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/c6fb9942-55ca-4310-921a-f4e92c0b52a2)
+
+Jika sudah, melihat kembali gambar pada nomor 17. Pada blok konfigurasi directory terdapat AuthUserFile yang mengarah ke file ```.htpasswd-rjp``` yang telah dibuat sebelumnya. Dengan ini, sistem autentikasi sudah terpasangkan dan fungsional:
+
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/1dac1d99-a01a-4e59-9ddc-f4909765be34)
+
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/5195a951-d8d8-422d-9464-48c9a5e5c589)
+
 
 # Soal 19
-Praktikan membuat agar setiap kali mengakses IP dari Abimanyu akan secara otomatis dialihkan ke www.abimanyu.yyy.com.
+Praktikan membuat agar setiap kali mengakses IP dari Abimanyu dalam kasus ini 10.73.4.3 akan secara otomatis dialihkan ke www.abimanyu.yyy.com.
 ## Jawaban
+
+Mengubah konfigurasi /etc/apache2/sites-available/abimanyu.it19.com.conf, dengan menambahkan ```ServerAlias (IP)```
+
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/b39e25fe-9a52-4abf-a5ce-9cdc7e1a9b97)
+
+Jika dilakukan curl akan terlihat html yang tertera seperti pada nomor 11:
+
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/b2b2a187-d6d8-4698-8479-44bd216be6ad)
 
 # Soal 20
 Karena website www.parikesit.abimanyu.yyy.com semakin banyak pengunjung dan banyak gambar gambar random, maka praktikan perlu mengubah request gambar yang memiliki substring “abimanyu” akan diarahkan menuju abimanyu.png.
