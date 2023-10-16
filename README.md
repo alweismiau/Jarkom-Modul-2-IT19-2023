@@ -125,7 +125,7 @@ service bind9 stop
 ```
 ![slave1](https://cdn.discordapp.com/attachments/1025213238763327683/1161936402389418075/image.png?ex=653a1c9a&is=6527a79a&hm=ea17e70be016c91f86ed1b44ec447bad0c7b00ef034eeb4346db4dc3745f12d6&)
 ### Pada Werkudara
-- Setup pada `/etc/bind/named.conf.local`\
+- Setup pada `/etc/bind/named.conf.local`
 ![slaved](https://cdn.discordapp.com/attachments/1025213238763327683/1161940625160142899/image.png?ex=653a2088&is=6527ab88&hm=81f33d67b09cd62bfd833320d9b599a6859a78783f0e2ff14747a9563896e9d2&)
 ### Pada Sadewa sebagai client
 - Setup `nameserver` di `/etc/resolv.conf` dengan IP Yudhistira dan IP Werkudara.
@@ -172,7 +172,7 @@ Praktikan membuat ubdomain melalui Werkudara dengan akses rjp.baratayuda.abimany
 - Kemudian membuat direktori baru
 - Setup ` /etc/bind/abimanyu/rjp.baratayuda.abimanyu.it19.com`
 ![setup](https://cdn.discordapp.com/attachments/1025213238763327683/1162369889231708170/image.png?ex=653bb051&is=65293b51&hm=48a972da066b64ca610a836eec6c838c0a160f5a099e7ea94aa86a361ff7d88a&)
-- -  Kemudian `restart bind9`
+- Kemudian `restart bind9`
 ```
 service bind9 restart
 ```
@@ -184,17 +184,18 @@ service bind9 restart
 Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Praktikan melakukan deployment pada masing-masing worker dengan algoritma Round Robin pada load balancer.
 ## Jawaban
 ### Pada load balancer arjuna
-Dilakukan konfigurasi pada node Arjuna dengan membuat file baru di: ```/etc/nginx/sites-available/arjuna.it19.com```, dengan berisikan:
+- Dilakukan konfigurasi pada node Arjuna dengan membuat file baru di `/etc/nginx/sites-available/arjuna.it19.com`, dengan berisikan:
 ![arjuna-lb](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/72d2418e-1341-4f9a-88cb-7ae1190565ed)
 
-3 IP yang terpasangkan pada blok ```upstream workers``` adalah IP dari Prabukusuma, Abimanyu, Wisanggeni secara berurutan
-
-Setelah config, hapus file default pada ```/etc/nginx/sites-enabled/``` agar tidak ter redirect ke page default nginx, serta dibentuk symlink dari file ```/etc/nginx/sites-available/arjuna.it19.com``` ke folder ```/etc/nginx/sites-enabled/```.
-Sesudah config, restart kembali nginx dengan ```service nginx restart```
+- 3 IP yang terpasangkan pada blok ```upstream workers``` adalah IP dari Prabukusuma, Abimanyu, Wisanggeni secara berurutan
+- Setelah config, hapus file default pada `/etc/nginx/sites-enabled/` agar tidak ter redirect ke page default nginx, serta dibentuk symlink dari file `/etc/nginx/sites-available/arjuna.it19.com` ke folder `/etc/nginx/sites-enabled/`.
+- Sesudah config, restart kembali nginx dengan 
+```
+service nginx restart
+``` 
 
 ### Pada worker Prabukusuma, Abimanyu, Wisanggeni
-
-Download resource index.php yang telah disediakan di soal, extract dan pindahkan ke folder ```/var/www/arjuna.it19``` dengan sejumlah command berikut: 
+- Download resource index.php yang telah disediakan di soal, extract dan pindahkan ke folder `/var/www/arjuna.it19` dengan sejumlah command berikut: 
 
 ```
 wget -O arjuna.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=17tAM_XDKYWDvF-JJix1x7txvTBEax7vX'
@@ -204,15 +205,30 @@ rm arjuna.zip # hapus zip
 cp /arjuna.yyy.com/index.php /var/www/arjuna.it19/index.php
 ```
 
-Buatlah config dalam masing-masing node worker di file dengan file ```/etc/nginx/sites-available/default``` sebagai template, copy dengan nama ```/etc/nginx/sites-available/arjuna.it19```
+- Buatlah config dalam masing-masing node worker di file dengan file `/etc/nginx/sites-available/default` sebagai template, copy dengan nama `/etc/nginx/sites-available/arjuna.it19`
 
-Ganti ```root``` dengan folder tempat index.php yang telah diekstrak tadi sebagai value, dan ubah value angka ```listen``` di awal file config dengan angka yang sesuai untuk tiap worker (Prabukusuma 8001, Abimanyu 8002, Wisanggeni 8003), dalam case ini menggunakan contoh config file dari node Abimanyu\
+- Ganti `root` dengan folder tempat `index.php` yang telah diekstrak tadi sebagai value, dan ubah value angka `listen` di awal file config dengan angka yang sesuai untuk tiap worker (Prabukusuma 8001, Abimanyu 8002, Wisanggeni 8003), dalam case ini menggunakan contoh config file dari node Abimanyu
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/a75ec3ec-0129-4a16-81df-d25f0f077c26)
+
+- Setup pada `/var/www/arjuna.it19/index.php`
+![setup](https://cdn.discordapp.com/attachments/1025213238763327683/1163405513179017347/image.png?ex=653f74d1&is=652cffd1&hm=4fc2160aa359e7b8f4514803fd03bc356a57118d1bddf601e12b25e95a8c1b13&)
+
+### Pada Sadewa 
+- Cek dengan `lynx http://IP yang dituju:800(angka)` 
+Pada Prabukusuma `lynx http://10.73.4.2:8001`
+![prabukusuma](https://cdn.discordapp.com/attachments/1025213238763327683/1163406326412611676/image.png?ex=653f7593&is=652d0093&hm=2847b79bd2e5b330a96588e87cb0562c407a9019bdfd6b474ff6e7a02b89d8b8&)
+
+Pada Abimanyu `lynx http://10.73.4.3:8002`
+![abimanyu](https://cdn.discordapp.com/attachments/1025213238763327683/1163407281690517584/image.png?ex=653f7677&is=652d0177&hm=937b4f639cd55404e3bb27902aa55123b4c35277716543c096123cc07a8e97ea&)
+
+Pada Wisanggeni `lynx http://10.73.4.4:8003`
+![wisanggeni](https://cdn.discordapp.com/attachments/1025213238763327683/1163408869368807535/image.png?ex=653f77f1&is=652d02f1&hm=47ecc7b44250e545310bbec839269c46abb04902931614d2b50c9a5eb6b43e21&)
 
 # Soal 11
 Praktikan melakukan konfigurasi Apache Web Server pada worker Abimanyu dengan web server www.abimanyu.yyy.com.
 ## Jawaban
-Untuk menyelesaikan soal berikut mengharuskan untuk download terlebih dahulu resource pada soal, yang dapat dilakukan dengan set command berikut:
+### Pada Abimanyu
+- Download resource pada soal, yang dapat dilakukan dengan set command berikut:
 ```
 wget -O abimanyu.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1a4V23hwK9S7hQEDEcv9FL14UkkrHc-Zc' # Download dari google drive resource
 unzip abimanyu.zip # Unzip file
@@ -220,29 +236,35 @@ rm abimanyu.zip # Hapus file jika sudah unzip
 
 cp -r /abimanyu.yyy.com/* /var/www/abimanyu.it19/ # Copy apapun yang ada di dalam folder /abimanyu.yyy.com/ (dengan wildcard *) ke dalam folder /var/www/abimanyu.it19/
 ```
-
-Jika sudah meletakkan file resource pada tempat yang seharusnya, selanjutnya membuat file config pada ```/etc/apache2/sites-available/abimanyu.it19.com.conf```. Dengan menggunakan file 000-default.conf sebagai template, lalu dimodifikasi dengan beberapa config tambahan sebagai berikut\
+- Membuat file config pada `/etc/apache2/sites-available/abimanyu.it19.com.conf`. Dengan menggunakan file 000-default.conf sebagai template, lalu dimodifikasi dengan beberapa config tambahan sebagai berikut
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/964d68a0-4ca1-4bd6-8bf5-f3cca1cbd7fc)
 
-Hasil jika konfigurasi benar dan berhasil dapat dicek dengan ```lynx http://abimanyu.it19.com```:
+- Hasil jika konfigurasi benar dan berhasil dapat dicek dengan `lynx http://abimanyu.it19.com` : 
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/57244010-e021-43fd-a2b9-97e64936a089)
-
-
-atau ```curl http://abimanyu.it19.com```:
+atau `curl http://abimanyu.it19.com`:
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/33c57573-c9ef-413e-a391-200b383e67fd)
+
+### Pada Sadewa
+- Uji menggunakan `lynx http://www.abimanyu.it19.com`
+![uji](https://cdn.discordapp.com/attachments/1025213238763327683/1163422619010334782/image.png?ex=653f84bf&is=652d0fbf&hm=11254bc2065a9fb22ff9a57aba7a07ea3cf7c4ad99784cafc168b244d8cd43bd&)
 
 # Soal 12
 Praktikan perlu mengubah agar url www.abimanyu.yyy.com/index.php/home menjadi www.abimanyu.yyy.com/home.
 ## Jawaban
+### Pada Abimanyu
+- Setup `/etc/apache2/sites-available/abimanyu.it19.com.conf`
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/964d68a0-4ca1-4bd6-8bf5-f3cca1cbd7fc)
+Value Alias diatas menggantikan path `/index.php/home` untuk mengakses `home.html` yang ada di folder `/var/www/abimanyu.it19/`. 
 
-Value Alias diatas menggantikan path /index.php/home untuk mengakses home.html yang ada di folder /var/www/abimanyu.it19/
+### Pada Sadewa
+- Uji menggunakan `lynx http://www.abimanyu.it19.com/home`
+![uji](https://cdn.discordapp.com/attachments/1025213238763327683/1163432462207168605/image.png?ex=653f8dea&is=652d18ea&hm=5d9705af6cdc061509aa1cb3c9f6e7a2461c927f2ef3e5b7d9f29dc3cc26f446&)
 
 # Soal 13
 Pada subdomain www.parikesit.abimanyu.yyy.com, praktikan menyimpan DocumentRoot pada /var/www/parikesit.abimanyu.yyy.
 ## Jawaban
-Pertama perlu mendownload terlebih dahulu dari resource yang telah disediakan, dengan set command berikut:
-
+### Pada Abimanyu
+- Download dari resource yang telah disediakan, dengan set command berikut:
 ```
 wget -O parikesit.abimanyu.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1LdbYntiYVF_NVNgJis1GLCLPEGyIOreS'
 unzip parikesit.abimanyu.zip
@@ -251,108 +273,129 @@ rm parikesit.abimanyu.zip
 cp -r /parikesit.abimanyu.yyy.com/error /var/www/parikesit.abimanyu.it19/error
 cp -r /parikesit.abimanyu.yyy.com/public /var/www/parikesit.abimanyu.it19/public
 ```
-untuk menyalin apapun yang ada dalam folder ```parikesit.abimanyu.yyy.com/error``` dan ```parikesit.abimanyu.yyy.com/public``` ke folder root document sebagai entrypoint ketika mengakses parikesit.abimanyu.it19.com
-
-Menggunakan salinan abimanyu.it19.com.conf untuk membuat config parikesit.abimanyu.it19.com
-
+- Salin apapun yang ada dalam folder `parikesit.abimanyu.yyy.com/error` dan `parikesit.abimanyu.yyy.com/public` ke folder root document sebagai entrypoint ketika mengakses parikesit.abimanyu.it19.com menggunakan salinan `abimanyu.it19.com.conf` untuk membuat config `parikesit.abimanyu.it19.com`
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/c8dbef2f-145b-48d5-8cc1-7c1a10b9832f)
+- Dalam gambar, value `DocumentRoot` diubah pathnya menjadi `/var/www/parikesit.abimanyu.it19`. 
+- Kemudian `restart apache2`
+```
+service apache2 restart
+```
 
-Dalam gambar, value ```DocumentRoot``` diubah pathnya menjadi ```/var/www/parikesit.abimanyu.it19```
+### Pada Sadewa
+- Uji dengan `lynx http://www.parikesit.abimanyu.it19.com`
+![uji](https://cdn.discordapp.com/attachments/1025213238763327683/1163434445144064060/image.png?ex=653f8fc3&is=652d1ac3&hm=674e7d19a9796c33cac528d5c26fa748fd591a0ba15ac0965aec7855fa8c44e4&)
 
 # Soal 14
 Pada subdomain tersebut folder /public hanya dapat melakukan directory listing sedangkan pada folder /secret tidak dapat diakses .
 ## Jawaban
-Melihat gambar nomor 13, terdapat 2 blok "Directory" yang mengarah ke folder /public dan /secret.
+### Pada Abimanyu
+- Setup `/etc/apache2/sites-available/parikesit.abimanyu.it19.com.conf`
+![abimanyu](https://cdn.discordapp.com/attachments/1025213238763327683/1163436679474974760/image.png?ex=653f91d7&is=652d1cd7&hm=2e7ef982e8f25a80b0a6d90762f1a0283bb2333016a23479f316ce34aa10c9eb&)
+- Kemudian `restart apache2`
+```
+service apache2 restart
+```
+- Sedangkan untuk folder /secret ditambahkan beberapa opsi:
+	
+	`Options +Indexes`
 
-Untuk folder /public sendiri ditambahkan opsi Options +Indexes, sehingga dapat melakukan directory listing ketika menjalankan lynx http://parikesit.abimanyu.it19.com/public
+	`AllowOverride none`  
+	
+	`Require all denied`
+	untuk mematikan akses menuju folder tersebut.
+
+- Karena dalam resource tidak disediakan folder /sercet, maka dilakukan `mkdir /var/www/parikesit.abimanyu.it19/secret`
+
+### Pada Sadewa
+- Uji `lynx http://parikesit.abimanyu.it19.com/public`
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/45fc032f-dc39-44de-b671-896270533d2c)
 
-Sedangkan untuk folder /secret ditambahkan beberapa opsi:
-	```Options +Indexes```
-	```AllowOverride none```
-	```Require all denied```
-untuk mematikan akses menuju folder tersebut.
-
-Karena dalam resource tidak disediakan folder /sercet, maka dilakukan ```mkdir /var/www/parikesit.abimanyu.it19/secret```
-
-Jika dicoba untuk mengakses /secret pada website, akan muncul:
+- Jika dicoba untuk mengakses /secret pada website, akan muncul:
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/13d61c99-b483-4303-bbdc-d8d028ae3659)
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/067fc07c-e4f8-4520-91e0-9e4a7bfc4524)
 
 # Soal 15
 Praktikan membuat kustomisasi halaman error pada folder /error untuk mengganti error kode pada Apache. Error kode yang perlu diganti adalah 404 Not Found dan 403 Forbidden.
 ## Jawaban
-Melihat gambar nomor 13, terdapat 2 line ErrorDocument yang menetapkan untuk http error code 404 diarahkan ke 404.html dan http error code 403 ke 403.html.
+### Pada abimanyu
+- Setup `error`
+![setup](https://cdn.discordapp.com/attachments/1025213238763327683/1163448182076887040/image.png?ex=653f9c8e&is=652d278e&hm=5b2b4056e887ef13cb773f749b4962ee2ec8bfb0f94ff9983766d54e75820563&)
 
-Jika mencoba untuk mengakses path terlarang maka akan muncul
+### Pada Sadewa
+- Melihat gambar nomor 13, terdapat 2 line `ErrorDocument` yang menetapkan untuk `http error code 404` diarahkan ke `404.html` dan `http error code 403` ke `403.html`.
+
+- Jika mencoba untuk mengakses path terlarang maka akan muncul
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/45fa53bf-2c36-479f-bde1-8f38a5231176)
-
-lalu diikuti dengan
 
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/95de15af-201b-4c7f-8722-cd94bc4e6503)
 
-Jika dicoba untuk mengakses path sembarang, akan muncul
-
+-  Jika dicoba untuk mengakses path sembarang, akan muncul
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/b625dc2c-5a68-47f4-88f9-856d88432e3a)
 
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/1593ab5a-44de-4cf5-ac25-d1cb5995ea7b)
-
 
 # Soal 16 
 Praktikan membuat suatu konfigurasi virtual host agar file asset www.parikesit.abimanyu.yyy.com/public/js menjadi 
 www.parikesit.abimanyu.yyy.com/js.
 ## Jawaban
+### Pada Abimanyu
+- Tambahkan code berikut: `Alias /js /var/www/parikesit.abimanyu.it03/public/js`.
+- Kembali melihat ke gambar nomor 13, terdapat blok `Alias` yang meneruskan client ke folder `/public/js` jika mengakses `www.parikesit.abimanyu.it19.com/js`
 
-Kembali melihat ke gambar nomor 13, terdapat blok ```Alias``` yang meneruskan client ke folder /public/js jika mengakses www.parikesit.abimanyu.it19.com/js
-
-![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/e2ce3f36-ede8-4b63-b32c-3db93eba88f4)
-
+### Pada Sadewa
+- Uji dengan `lynx http://www.parikesit.abimanyu.it19.com/js` ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/e2ce3f36-ede8-4b63-b32c-3db93eba88f4)
 
 # Soal 17
 Praktikan membuat konfigurasi agar www.rjp.baratayuda.abimanyu.yyy.com hanya dapat diakses melalui port 14000 dan 14400 agar aman.
 ## Jawaban
+### Pada Abimanyu
+- Lakukan konfigurasi pada `/etc/apache2/sites-available/rjp.baratayuda.abimanyu.it19.com.conf`![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/31dabe50-cd16-426b-af39-64405190afd8) dengan menggantikan `*:80` di tag `VirtualHost` menjadi `*:14000` dan `*:14400`
+- Lalu pada file `/etc/apache2/ports.conf`, tambahkan port yang akan didengar dengan menambahkan Listen dengan `port 14000` dan `14400` seperti berikut: ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/caa3dc86-4f6e-42e9-bfda-2d9cf06e349c)
 
-Lakukan konfigurasi pada ```/etc/apache2/sites-available/rjp.baratayuda.abimanyu.it19.com.conf```
-
-![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/31dabe50-cd16-426b-af39-64405190afd8)
-
-dengan menggantikan ```*:80``` di tag ```VirtualHost``` menjadi ```*:14000``` dan ```*:14400```
-
-Lalu pada file ```/etc/apache2/ports.conf```, tambahkan port yang akan 'didengar' dengan menambahkan Listen dengan port 14000 dan 14400 seperti berikut:
-
-![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/caa3dc86-4f6e-42e9-bfda-2d9cf06e349c)
+### Pada Sadewa
+- Uji dengan `lynx http://www.rjp.baratayuda.abimanyu.it19.com` ![ujirjp](https://cdn.discordapp.com/attachments/1025213238763327683/1163474785771204688/image.png?ex=653fb555&is=652d4055&hm=858fb26b47271af50e773af3f338a944b69ee4c0e3de437c468a0acecb4e83fb&)
+- `lynx http://www.rjp.baratayuda.abimanyu.it19.com:14000`
 
 # Soal 18
 Untuk mengaksesnya praktikan perlu membuat autentikasi username berupa “Wayang” dan password “baratayudayyy” dengan yyy merupakan kode kelompok. Letakkan DocumentRoot pada /var/www/rjp.baratayuda.abimanyu.yyy.
 ## Jawaban
-Dijalankan command berikut untuk membuat file .htpasswd-rjp yang nantinya akan digunakan untuk basic authentication saat mengakses http://rjp.baratayuda.abimanyu.it19.com:
-
-```htpasswd -c /etc/apache2/.htpasswd-rjp Wayang```
-
+### Pada Abimanyu
+Dijalankan command berikut untuk membuat `file .htpasswd-rjp` yang nantinya akan digunakan untuk basic authentication saat mengakses `http://rjp.baratayuda.abimanyu.it19.com`
+```
+htpasswd -c /etc/apache2/.htpasswd-rjp Wayang
+``` 
 Ini akan membuat file autentikasi basic dengan username "Wayang". Setelahnya akan ditanyakan password yang akan digunakan:
-
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/c6fb9942-55ca-4310-921a-f4e92c0b52a2)
 
-Jika sudah, melihat kembali gambar pada nomor 17. Pada blok konfigurasi directory terdapat AuthUserFile yang mengarah ke file ```.htpasswd-rjp``` yang telah dibuat sebelumnya. Dengan ini, sistem autentikasi sudah terpasangkan dan fungsional:
-
+- Jika sudah, melihat kembali gambar pada nomor 17. Pada blok konfigurasi directory terdapat AuthUserFile yang mengarah ke file `.htpasswd-rjp` yang telah dibuat sebelumnya. Dengan ini, sistem autentikasi sudah terpasangkan dan fungsional:
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/1dac1d99-a01a-4e59-9ddc-f4909765be34)
 
 ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/5195a951-d8d8-422d-9464-48c9a5e5c589)
 
-
 # Soal 19
 Praktikan membuat agar setiap kali mengakses IP dari Abimanyu dalam kasus ini 10.73.4.3 akan secara otomatis dialihkan ke www.abimanyu.yyy.com.
 ## Jawaban
+### Pada Abimanyu
+- Mengubah konfigurasi `/etc/apache2/sites-available/abimanyu.it19.com.conf`, dengan menambahkan `ServerAlias (IP)`. ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/b39e25fe-9a52-4abf-a5ce-9cdc7e1a9b97)
 
-Mengubah konfigurasi /etc/apache2/sites-available/abimanyu.it19.com.conf, dengan menambahkan ```ServerAlias (IP)```
+- Jika dilakukan curl akan terlihat html yang tertera seperti pada nomor 11: ![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/b2b2a187-d6d8-4698-8479-44bd216be6ad)
 
-![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/b39e25fe-9a52-4abf-a5ce-9cdc7e1a9b97)
-
-Jika dilakukan curl akan terlihat html yang tertera seperti pada nomor 11:
-
-![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/b2b2a187-d6d8-4698-8479-44bd216be6ad)
+### Pada Sadewa
+- Uji dengan lynx http://10.73.4.3 ![uhji](https://cdn.discordapp.com/attachments/1025213238763327683/1163482213623541770/image.png?ex=653fbc40&is=652d4740&hm=19159a4ff3170c06eda5a81d50223e7c4949069298df14e3739195f9a109a20c&)
 
 # Soal 20
 Karena website www.parikesit.abimanyu.yyy.com semakin banyak pengunjung dan banyak gambar gambar random, maka praktikan perlu mengubah request gambar yang memiliki substring “abimanyu” akan diarahkan menuju abimanyu.png.
 
 ## Jawaban
+### Pada Abimanyu
+- Tambahkan code dibawah ini pada `/etc/apache2/sites-available/parikesit.abimanyu.it19.com.conf`. 
+```
+RewriteEngine On
+
+    RewriteCond %{REQUEST_URI} abimanyu [NC]
+
+    RewriteRule (.*) /public/images/abimanyu.png [L]
+```
+### Pada Sadewa
+- Uji dengan `lynx http://www.parikesit.abimanyu.it19.com/aksdjabimanyu` 
+![hasil](https://cdn.discordapp.com/attachments/1025213238763327683/1163391886950666371/image.png?ex=653f6820&is=652cf320&hm=4e684ca9d07e082b1a84ab3247cb71736d12878aff1305c9516b103c761b0843&)
