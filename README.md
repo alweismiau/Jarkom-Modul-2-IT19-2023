@@ -241,19 +241,72 @@ Value Alias diatas menggantikan path /index.php/home untuk mengakses home.html y
 # Soal 13
 Pada subdomain www.parikesit.abimanyu.yyy.com, praktikan menyimpan DocumentRoot pada /var/www/parikesit.abimanyu.yyy.
 ## Jawaban
+Pertama perlu mendownload terlebih dahulu dari resource yang telah disediakan, dengan set command berikut:
+
+```
+wget -O parikesit.abimanyu.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1LdbYntiYVF_NVNgJis1GLCLPEGyIOreS'
+unzip parikesit.abimanyu.zip
+rm parikesit.abimanyu.zip
+
+cp -r /parikesit.abimanyu.yyy.com/error /var/www/parikesit.abimanyu.it19/error
+cp -r /parikesit.abimanyu.yyy.com/public /var/www/parikesit.abimanyu.it19/public
+```
+untuk menyalin apapun yang ada dalam folder ```parikesit.abimanyu.yyy.com/error``` dan ```parikesit.abimanyu.yyy.com/public``` ke folder root document sebagai entrypoint ketika mengakses parikesit.abimanyu.it19.com
+
+Menggunakan salinan abimanyu.it19.com.conf untuk membuat config parikesit.abimanyu.it19.com
+
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/c8dbef2f-145b-48d5-8cc1-7c1a10b9832f)
+
+Dalam gambar, value ```DocumentRoot``` diubah pathnya menjadi ```/var/www/parikesit.abimanyu.it19```
 
 # Soal 14
 Pada subdomain tersebut folder /public hanya dapat melakukan directory listing sedangkan pada folder /secret tidak dapat diakses .
 ## Jawaban
+Melihat gambar nomor 13, terdapat 2 blok "Directory" yang mengarah ke folder /public dan /secret.
+
+Untuk folder /public sendiri ditambahkan opsi Options +Indexes, sehingga dapat melakukan directory listing ketika menjalankan lynx http://parikesit.abimanyu.it19.com/public
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/45fc032f-dc39-44de-b671-896270533d2c)
+
+Sedangkan untuk folder /secret ditambahkan beberapa opsi:
+	```Options +Indexes```
+	```AllowOverride none```
+	```Require all denied```
+untuk mematikan akses menuju folder tersebut.
+
+Karena dalam resource tidak disediakan folder /sercet, maka dilakukan ```mkdir /var/www/parikesit.abimanyu.it19/secret```
+
+Jika dicoba untuk mengakses /secret pada website, akan muncul:
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/13d61c99-b483-4303-bbdc-d8d028ae3659)
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/067fc07c-e4f8-4520-91e0-9e4a7bfc4524)
 
 # Soal 15
 Praktikan membuat kustomisasi halaman error pada folder /error untuk mengganti error kode pada Apache. Error kode yang perlu diganti adalah 404 Not Found dan 403 Forbidden.
 ## Jawaban
+Melihat gambar nomor 13, terdapat 2 line ErrorDocument yang menetapkan untuk http error code 404 diarahkan ke 404.html dan http error code 403 ke 403.html.
+
+Jika mencoba untuk mengakses path terlarang maka akan muncul
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/45fa53bf-2c36-479f-bde1-8f38a5231176)
+
+lalu diikuti dengan
+
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/95de15af-201b-4c7f-8722-cd94bc4e6503)
+
+Jika dicoba untuk mengakses path sembarang, akan muncul
+
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/b625dc2c-5a68-47f4-88f9-856d88432e3a)
+
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/1593ab5a-44de-4cf5-ac25-d1cb5995ea7b)
+
 
 # Soal 16 
 Praktikan membuat suatu konfigurasi virtual host agar file asset www.parikesit.abimanyu.yyy.com/public/js menjadi 
 www.parikesit.abimanyu.yyy.com/js.
 ## Jawaban
+
+Kembali melihat ke gambar nomor 13, terdapat blok ```Alias``` yang meneruskan client ke folder /public/js jika mengakses www.parikesit.abimanyu.it19.com/js
+
+![image](https://github.com/alweismiau/Jarkom-Modul-2-IT19-2023/assets/112788819/e2ce3f36-ede8-4b63-b32c-3db93eba88f4)
+
 
 # Soal 17
 Praktikan membuat konfigurasi agar www.rjp.baratayuda.abimanyu.yyy.com hanya dapat diakses melalui port 14000 dan 14400 agar aman.
